@@ -3,7 +3,7 @@ package gocloak
 // MembershipType type of membership
 type MembershipType string // TODO type unclear from docs
 
-// MemberRepresentation membership of a user in an organisation
+// MemberRepresentation membership of a user in an organization
 type MemberRepresentation struct {
 	ID                         *string                            `json:"id,omitempty"`
 	Username                   *string                            `json:"username,omitempty"`
@@ -12,7 +12,7 @@ type MemberRepresentation struct {
 	Email                      *string                            `json:"email,omitempty"`
 	EmailVerified              *bool                              `json:"emailVerified,omitempty"`
 	Attributes                 *map[string][]string               `json:"attributes,omitempty"`
-	UserProfileMetadata        *UserProfileMetadata               `json:"userProfileMetadata,omitempty"` // FIXME
+	UserProfileMetadata        *UserProfileMetadata               `json:"userProfileMetadata,omitempty"`
 	Self                       *string                            `json:"self,omitempty"`
 	Origin                     *string                            `json:"origin,omitempty"`
 	CreatedTimestamp           *int64                             `json:"createdTimestamp,omitempty"`

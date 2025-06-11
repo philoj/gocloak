@@ -1,7 +1,8 @@
 package gocloak
 
-// OrganizationRepresentation Organisation
+// OrganizationRepresentation Organization
 type OrganizationRepresentation struct {
+	// ID readonly
 	ID                *string                             `json:"id,omitempty"`
 	Name              *string                             `json:"name,omitempty"`
 	Alias             *string                             `json:"alias,omitempty"`
@@ -16,7 +17,7 @@ type OrganizationRepresentation struct {
 
 func (v *OrganizationRepresentation) String() string { return prettyStringStruct(v) }
 
-// OrganizationDomainRepresentation Organisation domain
+// OrganizationDomainRepresentation Organization domain
 type OrganizationDomainRepresentation struct {
 	Name     *string `json:"name,omitempty"`
 	Verified *bool   `json:"verified,omitempty"`
@@ -24,7 +25,7 @@ type OrganizationDomainRepresentation struct {
 
 func (v *OrganizationDomainRepresentation) String() string { return prettyStringStruct(v) }
 
-type GetOrganisationsParams struct {
+type GetOrganizationsParams struct {
 	// BriefRepresentation defaults to false
 	// The meaning is counter-intuitive: If set to true, will get the non-brief(detailed) response
 	BriefRepresentation *bool `json:"briefRepresentation,string,omitempty"`
@@ -39,6 +40,6 @@ type GetOrganisationsParams struct {
 	// Max limits the page size
 	Max *int `json:"max,omitempty"`
 
-	// Query custom attributes
+	// Q Query custom attributes, in the format 'key1:value2 key2:value2'
 	Q *string `json:"q,omitempty"`
 }
