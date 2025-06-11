@@ -35,11 +35,15 @@ type MemberRepresentation struct {
 	MembershipType             *MembershipType                    `json:"membershipType,omitempty"`
 }
 
+func (v *MemberRepresentation) String() string { return prettyStringStruct(v) }
+
 // UserProfileMetadata User profile metadata
 type UserProfileMetadata struct {
 	Attributes *[]UserProfileAttributeMetadata      `json:"attributes,omitempty"`
 	Groups     *[]UserProfileAttributeGroupMetadata `json:"groups,omitempty"`
 }
+
+func (v *UserProfileMetadata) String() string { return prettyStringStruct(v) }
 
 // UserProfileAttributeMetadata User profile attribute metadata
 type UserProfileAttributeMetadata struct {
@@ -53,6 +57,8 @@ type UserProfileAttributeMetadata struct {
 	MultiValued *bool                      `json:"multiValued,omitempty"`
 }
 
+func (v *UserProfileAttributeMetadata) String() string { return prettyStringStruct(v) }
+
 // UserProfileAttributeGroupMetadata User profile attribute group metadata
 type UserProfileAttributeGroupMetadata struct {
 	Name               *string         `json:"name,omitempty"`
@@ -60,6 +66,8 @@ type UserProfileAttributeGroupMetadata struct {
 	DisplayDescription *string         `json:"displayDescription,omitempty"`
 	Annotations        *map[string]any `json:"annotations,omitempty"` // TODO any?
 }
+
+func (v *UserProfileAttributeGroupMetadata) String() string { return prettyStringStruct(v) }
 
 // UserConsentRepresentation User consent
 type UserConsentRepresentation struct {
@@ -70,9 +78,13 @@ type UserConsentRepresentation struct {
 	GrantedRealmRoles   *[]string `json:"grantedRealmRoles,omitempty"`
 }
 
+func (v *UserConsentRepresentation) String() string { return prettyStringStruct(v) }
+
 // SocialLinkRepresentation User social link
 type SocialLinkRepresentation struct {
 	SocialProvider *string `json:"socialProvider,omitempty"`
 	SocialUserID   *string `json:"socialUserId,omitempty"`
 	SocialUsername *string `json:"socialUsername,omitempty"`
 }
+
+func (v *SocialLinkRepresentation) String() string { return prettyStringStruct(v) }

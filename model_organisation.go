@@ -14,11 +14,15 @@ type OrganizationRepresentation struct {
 	IdentityProviders *[]IdentityProviderRepresentation   `json:"identityProviders,omitempty"`
 }
 
+func (v *OrganizationRepresentation) String() string { return prettyStringStruct(v) }
+
 // OrganizationDomainRepresentation Organisation domain
 type OrganizationDomainRepresentation struct {
 	Name     *string `json:"name,omitempty"`
 	Verified *bool   `json:"verified,omitempty"`
 }
+
+func (v *OrganizationDomainRepresentation) String() string { return prettyStringStruct(v) }
 
 type GetOrganisationsParams struct {
 	// BriefRepresentation defaults to false
