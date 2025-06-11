@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/go-resty/resty/v2"
 	"github.com/opentracing/opentracing-go"
-	"github.com/pkg/errors"
 	"strings"
 )
 
@@ -52,7 +51,7 @@ func checkForError(resp *resty.Response, err error, errMessage string) error {
 	if err != nil {
 		return &APIError{
 			Code:    0,
-			Message: errors.Wrap(err, errMessage).Error(),
+			Message: fmt.Errorf("%s: %w", errMessage, err).Error(),
 			Type:    ParseAPIErrType(err),
 		}
 	}
@@ -96,16 +95,16 @@ func UserAttributeContains(attributes map[string][]string, attribute, value stri
 // checkPermissionTicketParams checks that mandatory fields are present
 func checkPermissionTicketParams(permissions []CreatePermissionTicketParams) error {
 	if len(permissions) == 0 {
-		return errors.New("at least one permission ticket must be requested")
+		return fmt.Errorf("at least one permission ticket must be requested")
 	}
 
 	for _, pt := range permissions {
 
 		if NilOrEmpty(pt.ResourceID) {
-			return errors.New("resourceID required for permission ticket")
+			return fmt.Errorf("resourceID required for permission ticket")
 		}
 		if NilOrEmptyArray(pt.ResourceScopes) {
-			return errors.New("at least one resourceScope required for permission ticket")
+			return fmt.Errorf("at least one resourceScope required for permission ticket")
 		}
 	}
 
@@ -115,13 +114,13 @@ func checkPermissionTicketParams(permissions []CreatePermissionTicketParams) err
 // checkPermissionGrantParams checks for mandatory fields
 func checkPermissionGrantParams(permission PermissionGrantParams) error {
 	if NilOrEmpty(permission.RequesterID) {
-		return errors.New("requesterID required to grant user permission")
+		return fmt.Errorf("requesterID required to grant user permission")
 	}
 	if NilOrEmpty(permission.ResourceID) {
-		return errors.New("resourceID required to grant user permission")
+		return fmt.Errorf("resourceID required to grant user permission")
 	}
 	if NilOrEmpty(permission.ScopeName) {
-		return errors.New("scopeName required to grant user permission")
+		return fmt.Errorf("scopeName required to grant user permission")
 	}
 
 	return nil
@@ -135,7 +134,7 @@ func checkPermissionUpdateParams(permission PermissionGrantParams) error {
 	}
 
 	if permission.Granted == nil {
-		return errors.New("granted required to update user permission")
+		return fmt.Errorf("granted required to update user permission")
 	}
 	return nil
 }
