@@ -3,6 +3,7 @@ package gocloak
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"strings"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -15,18 +16,14 @@ import (
 // "string" tag allows to convert the non-string fields of a structure to map[string]string.
 // "omitempty" allows to skip the fields with default values.
 func GetQueryParams(s interface{}) (map[string]string, error) {
-	// if obj, ok := s.(GetGroupsParams); ok {
-	// 	obj.OnMarshal()
-	// 	s = obj
-	// }
 	b, err := json.Marshal(s)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("marshalling query params: %w", err)
 	}
 	var res map[string]string
 	err = json.Unmarshal(b, &res)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unmarshalling query params: %w", err)
 	}
 	return res, nil
 }
