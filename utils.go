@@ -2,150 +2,146 @@ package gocloak
 
 import (
 	"context"
-
+	"fmt"
+	"github.com/go-resty/resty/v2"
 	"github.com/opentracing/opentracing-go"
+	"github.com/pkg/errors"
+	"strings"
 )
 
-type contextKey string
+func getID(resp *resty.Response) string {
+	header := resp.Header().Get("Location")
+	splittedPath := strings.Split(header, urlSeparator)
 
-var tracerContextKey = contextKey("tracer")
-
-// StringP returns a pointer of a string variable
-func StringP(value string) *string {
-	return &value
+	return splittedPath[len(splittedPath)-1]
 }
 
-// PString returns a string value from a pointer
-func PString(value *string) string {
-	if value == nil {
-		return ""
-	}
-	return *value
-}
-
-// BoolP returns a pointer of a boolean variable
-func BoolP(value bool) *bool {
-	return &value
-}
-
-// PBool returns a boolean value from a pointer
-func PBool(value *bool) bool {
-	if value == nil {
-		return false
-	}
-	return *value
-}
-
-// IntP returns a pointer of an integer variable
-func IntP(value int) *int {
-	return &value
-}
-
-// Int32P returns a pointer of an int32 variable
-func Int32P(value int32) *int32 {
-	return &value
-}
-
-// Int64P returns a pointer of an int64 variable
-func Int64P(value int64) *int64 {
-	return &value
-}
-
-// PInt returns an integer value from a pointer
-func PInt(value *int) int {
-	if value == nil {
-		return 0
-	}
-	return *value
-}
-
-// PInt32 returns an int32 value from a pointer
-func PInt32(value *int32) int32 {
-	if value == nil {
-		return 0
-	}
-	return *value
-}
-
-// PInt64 returns an int64 value from a pointer
-func PInt64(value *int64) int64 {
-	if value == nil {
-		return 0
-	}
-	return *value
-}
-
-// Float32P returns a pointer of a float32 variable
-func Float32P(value float32) *float32 {
-	return &value
-}
-
-// Float64P returns a pointer of a float64 variable
-func Float64P(value float64) *float64 {
-	return &value
-}
-
-// PFloat32 returns an flaot32 value from a pointer
-func PFloat32(value *float32) float32 {
-	if value == nil {
-		return 0
-	}
-	return *value
-}
-
-// PFloat64 returns an flaot64 value from a pointer
-func PFloat64(value *float64) float64 {
-	if value == nil {
-		return 0
-	}
-	return *value
-}
-
-// NilOrEmpty returns true if string is empty or has a nil value
-func NilOrEmpty(value *string) bool {
-	return value == nil || len(*value) == 0
-}
-
-// NilOrEmptyArray returns true if string is empty or has a nil value
-func NilOrEmptyArray(value *[]string) bool {
-
-	if value == nil || len(*value) == 0 {
-		return true
+func findUsedKey(usedKeyID string, keys []CertResponseKey) *CertResponseKey {
+	for _, key := range keys {
+		if *(key.Kid) == usedKeyID {
+			return &key
+		}
 	}
 
-	return (*value)[0] == ""
-
+	return nil
 }
 
-// DecisionStrategyP returns a pointer for a DecisionStrategy value
-func DecisionStrategyP(value DecisionStrategy) *DecisionStrategy {
-	return &value
-}
-
-// LogicP returns a pointer for a Logic value
-func LogicP(value Logic) *Logic {
-	return &value
-}
-
-// PolicyEnforcementModeP returns a pointer for a PolicyEnforcementMode value
-func PolicyEnforcementModeP(value PolicyEnforcementMode) *PolicyEnforcementMode {
-	return &value
-}
-
-// PStringSlice converts a pointer to []string or returns ampty slice if nill value
-func PStringSlice(value *[]string) []string {
-	if value == nil {
-		return []string{}
+func injectTracingHeaders(ctx context.Context, req *resty.Request) *resty.Request {
+	// look for span in context, do nothing if span is not found
+	span := opentracing.SpanFromContext(ctx)
+	if span == nil {
+		return req
 	}
-	return *value
+
+	// look for tracer in context, use global tracer if not found
+	tracer, ok := ctx.Value(tracerContextKey).(opentracing.Tracer)
+	if !ok || tracer == nil {
+		tracer = opentracing.GlobalTracer()
+	}
+
+	// inject tracing header into request
+	err := tracer.Inject(span.Context(), opentracing.HTTPHeaders, opentracing.HTTPHeadersCarrier(req.Header))
+	if err != nil {
+		return req
+	}
+
+	return req
 }
 
-// NilOrEmptySlice returns true if list is empty or has a nil value
-func NilOrEmptySlice(value *[]string) bool {
-	return value == nil || len(*value) == 0
+func checkForError(resp *resty.Response, err error, errMessage string) error {
+	if err != nil {
+		return &APIError{
+			Code:    0,
+			Message: errors.Wrap(err, errMessage).Error(),
+			Type:    ParseAPIErrType(err),
+		}
+	}
+
+	if resp == nil {
+		return &APIError{
+			Message: "empty response",
+			Type:    ParseAPIErrType(err),
+		}
+	}
+
+	if resp.IsError() {
+		var msg string
+
+		if e, ok := resp.Error().(*HTTPErrorResponse); ok && e.NotEmpty() {
+			msg = fmt.Sprintf("%s: %s", resp.Status(), e)
+		} else {
+			msg = resp.Status()
+		}
+
+		return &APIError{
+			Code:    resp.StatusCode(),
+			Message: msg,
+			Type:    ParseAPIErrType(err),
+		}
+	}
+
+	return nil
 }
 
-// WithTracer generates a context that has a tracer attached
-func WithTracer(ctx context.Context, tracer opentracing.Tracer) context.Context {
-	return context.WithValue(ctx, tracerContextKey, tracer)
+// UserAttributeContains checks if the given attribute value is set
+func UserAttributeContains(attributes map[string][]string, attribute, value string) bool {
+	for _, item := range attributes[attribute] {
+		if item == value {
+			return true
+		}
+	}
+	return false
+}
+
+// checkPermissionTicketParams checks that mandatory fields are present
+func checkPermissionTicketParams(permissions []CreatePermissionTicketParams) error {
+	if len(permissions) == 0 {
+		return errors.New("at least one permission ticket must be requested")
+	}
+
+	for _, pt := range permissions {
+
+		if NilOrEmpty(pt.ResourceID) {
+			return errors.New("resourceID required for permission ticket")
+		}
+		if NilOrEmptyArray(pt.ResourceScopes) {
+			return errors.New("at least one resourceScope required for permission ticket")
+		}
+	}
+
+	return nil
+}
+
+// checkPermissionGrantParams checks for mandatory fields
+func checkPermissionGrantParams(permission PermissionGrantParams) error {
+	if NilOrEmpty(permission.RequesterID) {
+		return errors.New("requesterID required to grant user permission")
+	}
+	if NilOrEmpty(permission.ResourceID) {
+		return errors.New("resourceID required to grant user permission")
+	}
+	if NilOrEmpty(permission.ScopeName) {
+		return errors.New("scopeName required to grant user permission")
+	}
+
+	return nil
+}
+
+// checkPermissionUpdateParams
+func checkPermissionUpdateParams(permission PermissionGrantParams) error {
+	err := checkPermissionGrantParams(permission)
+	if err != nil {
+		return err
+	}
+
+	if permission.Granted == nil {
+		return errors.New("granted required to update user permission")
+	}
+	return nil
+}
+
+const urlSeparator string = "/"
+
+func makeURL(path ...string) string {
+	return strings.Join(path, urlSeparator)
 }

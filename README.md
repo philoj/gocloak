@@ -1,12 +1,12 @@
 # gocloak
 
-[![codebeat badge](https://codebeat.co/badges/18a37f35-6a95-4e40-9e78-272233892332)](https://codebeat.co/projects/github-com-nerzal-gocloak-main)
+[![codebeat badge](https://codebeat.co/badges/18a37f35-6a95-4e40-9e78-272233892332)](https://codebeat.co/projects/github-com-philoj-gocloak-main)
 [![Go Report Card](https://goreportcard.com/badge/github.com/philoj/gocloak)](https://goreportcard.com/report/github.com/philoj/gocloak)
 [![Go Doc](https://godoc.org/github.com/philoj/gocloak?status.svg)](https://godoc.org/github.com/philoj/gocloak)
 [![Build Status](https://github.com/philoj/gocloak/workflows/Tests/badge.svg)](https://github.com/philoj/gocloak/actions?query=branch%3Amain+event%3Apush)
-[![GitHub release](https://img.shields.io/github/tag/Nerzal/gocloak.svg)](https://GitHub.com/Nerzal/gocloak/releases/)
-[![codecov](https://codecov.io/gh/Nerzal/gocloak/branch/master/graph/badge.svg)](https://codecov.io/gh/Nerzal/gocloak)
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FNerzal%2Fgocloak.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FNerzal%2Fgocloak?ref=badge_shield)
+[![GitHub release](https://img.shields.io/github/tag/philoj/gocloak.svg)](https://GitHub.com/philoj/gocloak/releases/)
+[![codecov](https://codecov.io/gh/philoj/gocloak/branch/master/graph/badge.svg)](https://codecov.io/gh/philoj/gocloak)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fphiloj%2Fgocloak.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fphiloj%2Fgocloak?ref=badge_shield)
 
 Golang Keycloak API Package
 
@@ -16,7 +16,7 @@ For Questions either raise an issue, or come to the [gopher-slack](https://invit
 
 If u are using the echo framework have a look at [gocloak-echo](https://github.com/philoj/gocloak-echo)
 
-Benchmarks can be found [here](https://nerzal.github.io/gocloak/dev/bench/)
+Benchmarks can be found [here](https://philoj.github.io/gocloak/dev/bench/)
 
 ## Contribution
 
@@ -239,8 +239,5 @@ Note that empty parameters are not included, because of the use of ```omitempty`
 
 ## License
 
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FNerzal%2Fgocloak.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FNerzal%2Fgocloak?ref=badge_large)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fphiloj%2Fgocloak.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fphiloj%2Fgocloak?ref=badge_large)
 
-## Related Projects
-
-[GocloakSession](https://github.com/Clarilab/gocloaksession)
