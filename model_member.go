@@ -21,7 +21,7 @@ type MemberRepresentation struct {
 	FederationLink             *string                            `json:"federationLink,omitempty"`
 	ServiceAccountClientID     *string                            `json:"serviceAccountClientId,omitempty"`
 	Credentials                *[]CredentialRepresentation        `json:"credentials,omitempty"`
-	DisableableCredentialTypes *[]string                          `json:"disableableCredentialTypes,omitempty"`
+	DisableableCredentialTypes *[]any                             `json:"disableableCredentialTypes,omitempty"`
 	RequiredActions            *[]string                          `json:"requiredActions,omitempty"`
 	FederatedIdentities        *[]FederatedIdentityRepresentation `json:"federatedIdentities,omitempty"`
 	RealmRoles                 *[]string                          `json:"realmRoles,omitempty"`
@@ -88,3 +88,7 @@ type SocialLinkRepresentation struct {
 }
 
 func (v *SocialLinkRepresentation) String() string { return prettyStringStruct(v) }
+
+type GetOrganizationMembersParams struct {
+	// TODO
+}
